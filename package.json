@@ -1,0 +1,69 @@
+{
+  "name": "phantom-stories",
+  "license": "GPL-3.0-or-later",
+  "author": "Galileo Sánchez <contact@galileopy.com> (https://galileopy.com/)",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "module": "build/index.es.js",
+  "jsnext:main": "build/index.es.js",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "jest --coverage",
+    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
+  },
+  "files": [
+    "build"
+  ],
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.2",
+    "@testing-library/react": "^10.4.7",
+    "@types/jest": "^26.0.8",
+    "@types/react": "^16.9.43",
+    "@types/react-dom": "^16.9.8",
+    "@typescript-eslint/eslint-plugin": "^3.7.1",
+    "@typescript-eslint/parser": "^3.7.1",
+    "eslint": "^7.5.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.20.5",
+    "jest": "^26.2.2",
+    "prettier": "^2.0.5",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "rollup": "^2.23.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-peer-deps-external": "^2.2.3",
+    "rollup-plugin-typescript2": "^0.27.1",
+    "ts-jest": "^26.1.4",
+    "typescript": "^3.9.7"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
+    "testPathIgnorePatterns": [
+      "build/"
+    ]
+  },
+  "standard": {
+    "ignore": [
+      "node_modules/",
+      "build/"
+    ],
+    "globals": [
+      "describe",
+      "it",
+      "test",
+      "expect",
+      "afterAll",
+      "jest"
+    ]
+  },
+  "peerDependencies": {
+    "react": "^16",
+    "react-dom": "^16"
+  },
+  "dependencies": {
+    "remeda": "^0.0.20"
+  }
+}
