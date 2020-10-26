@@ -25,6 +25,7 @@ export interface ResourceMethods<T, Q> {
   matchWith: <R>(pattern: ResourcePattern<T, Q, R>) => R;
   matchWithPartial: (pattern: PartialPattern<T, Q>) => void;
   update: (params: Q) => Query<Q>;
+  getDataOr: (value: T) => T;
 }
 
 export class Query<Q> implements ResourceMethods<any, Q> {
@@ -51,6 +52,9 @@ export class Query<Q> implements ResourceMethods<any, Q> {
   }
   public update(params: Q): Query<Q> {
     return Query.of(params);
+  }
+  public getDataOr(value: any): any {
+    return value;
   }
 }
 
@@ -86,6 +90,9 @@ export class Data<T, Q> implements ResourceMethods<T, Q> {
   public update(params: Q): Query<Q> {
     return Query.of(params);
   }
+  public getDataOr(): T {
+    return this.value;
+  }
 }
 
 export class Empty<Q> implements ResourceMethods<any, Q> {
@@ -114,6 +121,9 @@ export class Empty<Q> implements ResourceMethods<any, Q> {
   public update(params: Q): Query<Q> {
     return Query.of(params);
   }
+  public getDataOr(value: any): any {
+    return value;
+  }
 }
 
 export class Error<Q> implements ResourceMethods<any, Q> {
@@ -140,6 +150,9 @@ export class Error<Q> implements ResourceMethods<any, Q> {
   }
   public update(params: Q): Query<Q> {
     return Query.of(params);
+  }
+  public getDataOr(value: any): any {
+    return value;
   }
 }
 

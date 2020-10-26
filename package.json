@@ -8,6 +8,7 @@
   "jsnext:main": "build/index.es.js",
   "scripts": {
     "build": "rollup -c",
+    "prepare": "npm run build",
     "test": "jest --coverage",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },
