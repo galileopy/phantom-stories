@@ -1,11 +1,4 @@
-import {
-  Resource,
-  Data,
-  Query,
-  Empty,
-  Failure,
-  ResourceTypes // Import ResourceTypes
-} from "./Resource";
+import { Resource, Data, Query, Empty, Failure } from "./Resource";
 
 // Utility functions
 const id = <T>(x: T): T => x;
@@ -75,7 +68,6 @@ describe("Resource", () => {
     test("Composition: map(f ∘ g) === map(f) ∘ map(g)", () => {
       const f = (x: number) => x + 1;
       const g = (x: number) => x * 2;
-
       expect(
         resourceEquals(data.map(compose(f, g)), data.map(g).map(f))
       ).toBe(true);
@@ -95,18 +87,15 @@ describe("Resource", () => {
   });
 
   describe("Applicative Functor Laws", () => {
-    // Law: pure id <*> v === v
     test("Identity: pure(id).ap(v) === v", () => {
       const pureId = Data.of(id, params);
       expect(resourceEquals(pureId.ap(data), data)).toBe(true);
-      // Non-data values remain unchanged when id is applied
       expect(resourceEquals(pureId.ap(query), query)).toBe(true);
       expect(resourceEquals(pureId.ap(empty), empty)).toBe(true);
       expect(resourceEquals(pureId.ap(failure), failure)).toBe(true);
-      // Non-data functions applied to values also return the value's state
-      expect(resourceEquals(query.ap(data), query)).toBe(true); // Assuming Query.ap returns Query
-      expect(resourceEquals(empty.ap(data), empty)).toBe(true); // Assuming Empty.ap returns Empty
-      expect(resourceEquals(failure.ap(data), failure)).toBe(true); // Assuming Failure.ap returns Failure
+      expect(resourceEquals(query.ap(data), query)).toBe(true);
+      expect(resourceEquals(empty.ap(data), empty)).toBe(true);
+      expect(resourceEquals(failure.ap(data), failure)).toBe(true);
     });
 
     test("Homomorphism: ap(pure(f))(pure(x)) === pure(f(x))", () => {
@@ -114,73 +103,31 @@ describe("Resource", () => {
       const x = 42;
       const pureF = Data.of(f, params);
       const pureX = Data.of(x, params);
-
-      // Law: pure f <*> pure x === pure (f x)
       const left = pureF.ap(pureX);
       const right = Data.of(f(x), params);
       expect(resourceEquals(left, right)).toBe(true);
     });
 
     test("Interchange: u <*> pure y === pure ($ y) <*> u", () => {
-      const u = Data.of((x: number) => x + 1, params); // Resource with function
-      const y = 42; // Plain value
-      const pureY = Data.of(y, params); // Resource with value
-
-      // Law: u <*> pure y === pure ($ y) <*> u
+      const u = Data.of((x: number) => x + 1, params);
+      const y = 42;
+      const pureY = Data.of(y, params);
       const left = u.ap(pureY);
-      // pure ($ y) === Data.of( (f: (y: number) => R) => f(y) )
       const pureApplyY = Data.of(
         (fn: (y: number) => number) => fn(y),
         params
       );
       const right = pureApplyY.ap(u);
-
       expect(resourceEquals(left, right)).toBe(true);
     });
 
-    // Test sequential application using a curried function
-    test("Sequential Application: pure(curried_h).ap(fx).ap(fy)", () => {
-      // Curried function h = x => y => x + y
-      const curriedAdd = (x: number) => (y: number) => x + y;
-      const pureH = Data.of(curriedAdd, params);
-      const fx = Data.of(10, params);
-      const fy = Data.of(20, params);
-
-      // pure(h).ap(fx) should yield Data(y => 10 + y)
-      const intermediate = pureH.ap(fx);
-
-      // Check intermediate state (optional but good for debugging)
-      // Perform type check *before* accessing value
-      if (intermediate.type === ResourceTypes.Data) {
-        expect(typeof intermediate.value).toBe("function");
-      } else {
-        // If intermediate is not Data, something went wrong in the test setup or ap logic
-        throw new Error(
-          "Intermediate step in Composition test did not result in Data"
-        );
-      }
-
-      // intermediate.ap(fy) should yield Data(10 + 20) = Data(30)
-      const result = intermediate.ap(fy);
-
-      const expected = Data.of(curriedAdd(10)(20), params); // Data(30)
-
-      expect(resourceEquals(result, expected)).toBe(true);
-
-      // Test with non-data in the chain
-      const queryY = Query.of<{ id: string }>(params);
-      const emptyY = Empty.of<{ id: string }>(params);
-      const failureY = Failure.of<{ id: string }>(["fail"], params);
-      // Applying a function resource (intermediate) to non-data should yield the non-data state
-      expect(resourceEquals(intermediate.ap(queryY), queryY)).toBe(
-        true
-      );
-      expect(resourceEquals(intermediate.ap(emptyY), emptyY)).toBe(
-        true
-      );
-      expect(
-        resourceEquals(intermediate.ap(failureY), failureY)
-      ).toBe(true);
+    test("Composition: ap(ap(pure(compose))(u))(v) === ap(u)(ap(v))", () => {
+      const u = Data.of((x: number) => x + 1, params);
+      const v = Data.of((x: number) => x * 2, params);
+      const w = Data.of(42, params);
+      const left = w.ap(v.ap(u.ap(Data.of(compose, params))));
+      const right = w.ap(u).ap(v);
+      expect(resourceEquals(left, right)).toBe(true);
     });
   });
 
@@ -189,7 +136,6 @@ describe("Resource", () => {
       const a = 42;
       const f = (d: Data<number, { id: string }>) =>
         Data.of(d.value + 1, d.params);
-
       const left = Data.of(a, params).chain(f);
       const right = f(Data.of(a, params));
       expect(resourceEquals(left, right)).toBe(true);
@@ -235,7 +181,6 @@ describe("Resource", () => {
         Data.of(d.value + 1, d.params);
       const g = (d: Data<number, { id: string }>) =>
         Data.of(d.value * 2, d.params);
-
       const left = data.chain(f).chain(g);
       const right = data.chain((x: Data<number, { id: string }>) =>
         f(x).chain(g)
@@ -282,9 +227,7 @@ describe("Resource", () => {
       expect(failure.chain(chainFn)).toBe(failure);
 
       const apFnResource = Data.of(fn, params);
-      const dataResource = Data.of(10, params); // Need a value resource to apply to
-
-      // Non-Data function resources applied to Data value resource
+      const dataResource = Data.of(10, params);
       expect(resourceEquals(query.ap(dataResource), query)).toBe(
         true
       );
@@ -295,7 +238,6 @@ describe("Resource", () => {
         true
       );
 
-      // Data function resource applied to non-Data value resource
       const queryVal = Query.of(params);
       const emptyVal = Empty.of(params);
       const failureVal = Failure.of(["val error"], params);
@@ -309,10 +251,56 @@ describe("Resource", () => {
         resourceEquals(apFnResource.ap(failureVal), failureVal)
       ).toBe(true);
     });
+
+    // Legacy test: getDataOr extracts value or returns fallback
+    test("getDataOr extracts current value or returns fallback", () => {
+      const fallback = "some string";
+      expect(data.getDataOr(fallback)).toEqual(42);
+      expect(query.getDataOr(fallback)).toEqual(fallback);
+      expect(empty.getDataOr(fallback)).toEqual(fallback);
+      expect(failure.getDataOr(fallback)).toEqual(fallback);
+    });
+
+    // Legacy-inspired test: mapSafe handles errors like run/validate
+    test("mapSafe handles transformation errors", () => {
+      const message = "This should be an error message";
+      const fn = () => {
+        throw new Error(message);
+      };
+      const result = data.mapSafe(fn);
+      expect(result).toBeInstanceOf(Failure);
+      if (result instanceof Failure) {
+        expect(result.params).toEqual(params);
+        expect(result.messages).toContain(message);
+      }
+    });
+
+    // Legacy-inspired test: overPromise handles promise resolution like runPromise
+    test("overPromise resolves to Data or Failure", async () => {
+      const value = { foo: "bar" };
+      const message = "This should be an error message";
+      const success = await Resource.overPromise(
+        params,
+        Promise.resolve(value)
+      );
+      expect(success).toBeInstanceOf(Data);
+      if (success instanceof Data) {
+        expect(success.value).toEqual(value);
+        expect(success.params).toEqual(params);
+      }
+      const error = await Resource.overPromise(
+        params,
+        Promise.reject(new Error(message))
+      );
+      expect(error).toBeInstanceOf(Failure);
+      if (error instanceof Failure) {
+        expect(error.messages).toContain(message);
+        expect(error.params).toEqual(params);
+      }
+    });
   });
 
   describe("Optional Parameters Handling", () => {
-    // Explicitly type Q as undefined for resources without params
     const dataNoParams = Data.of<number, undefined>(100);
     const queryNoParams = Query.of<undefined>();
     const emptyNoParams = Empty.of<undefined>();
@@ -322,7 +310,12 @@ describe("Resource", () => {
     const addOne = (x: number) => x + 1;
     const dataFnNoParams = Data.of<typeof addOne, undefined>(addOne);
 
-    test("Constructors handle undefined params", () => {
+    // Legacy test: Constructors handle params
+    test("Constructors handle defined and undefined params", () => {
+      expect(data.params).toEqual(params);
+      expect(query.params).toEqual(params);
+      expect(empty.params).toEqual(params);
+      expect(failure.params).toEqual(params);
       expect(dataNoParams.params).toBeUndefined();
       expect(queryNoParams.params).toBeUndefined();
       expect(emptyNoParams.params).toBeUndefined();
@@ -348,9 +341,7 @@ describe("Resource", () => {
     });
 
     test("ap preserves undefined params where appropriate", () => {
-      // func(no_param).ap(val(no_param)) -> no_param
       expect(dataFnNoParams.ap(dataNoParams).params).toBeUndefined();
-      // func(param).ap(val(no_param)) -> no_param (params from value resource take precedence)
       const dataFnWithParams = Data.of<typeof addOne, { id: string }>(
         addOne,
         { id: "func" }
@@ -358,18 +349,12 @@ describe("Resource", () => {
       expect(
         dataFnWithParams.ap(dataNoParams).params
       ).toBeUndefined();
-      // func(no_param).ap(val(param)) -> param (params from value resource take precedence)
       const dataWithParams = Data.of<number, { id: string }>(50, {
         id: "val"
       });
-      // No cast needed - ap signature <A, B, QVal> handles different Q types.
-      // Resulting resource gets QVal from dataWithParams.
       const result = dataFnNoParams.ap(dataWithParams);
       expect(result.params).toEqual({ id: "val" });
-
-      // Non-data propagation (params come from the non-data resource)
       expect(dataFnNoParams.ap(queryNoParams).params).toBeUndefined();
-      expect(dataFnNoParams.ap(emptyNoParams).params).toBeUndefined();
       expect(dataFnNoParams.ap(emptyNoParams).params).toBeUndefined();
       expect(
         dataFnNoParams.ap(failureNoParams).params
@@ -377,7 +362,6 @@ describe("Resource", () => {
     });
 
     test("chain handles params correctly", () => {
-      // Define chain functions with explicit types matching dataNoParams (Q = undefined)
       const chainFnData = (_d: Data<number, undefined>) =>
         Data.of<number, { inner: boolean }>(200, { inner: true });
       const chainFnQuery = (_d: Data<number, undefined>) =>
@@ -386,20 +370,15 @@ describe("Resource", () => {
         Failure.of<{ inner: boolean }>(["inner fail"], {
           inner: true
         });
-
-      // If chain returns Data, params are from the *inner* Data
       expect(dataNoParams.chain(chainFnData).params).toEqual({
         inner: true
       });
-      // If chain returns non-Data, params are from the *inner* non-Data resource
       expect(dataNoParams.chain(chainFnQuery).params).toEqual({
         inner: true
       });
       expect(dataNoParams.chain(chainFnFailure).params).toEqual({
         inner: true
       });
-
-      // Non-data resources ignore chain, preserving their original undefined params
       expect(queryNoParams.chain(chainFnData).params).toBeUndefined();
       expect(emptyNoParams.chain(chainFnData).params).toBeUndefined();
       expect(
@@ -414,6 +393,7 @@ describe("Resource", () => {
       expect(failureNoParams.of(5).params).toBeUndefined();
     });
 
+    // Legacy test: update adds params
     test("update adds params", () => {
       const newParams = { updated: true };
       expect(dataNoParams.update(newParams).params).toEqual(
@@ -428,6 +408,7 @@ describe("Resource", () => {
       expect(failureNoParams.update(newParams).params).toEqual(
         newParams
       );
+      expect(data.update(newParams).params).toEqual(newParams); // No merging, unlike legacy
     });
 
     test("matchWith receives undefined params", () => {

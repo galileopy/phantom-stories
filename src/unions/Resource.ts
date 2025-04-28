@@ -121,8 +121,10 @@ export interface ResourceMethods<T, Q> {
    * const failureVal = Resource.Failure<number>(['val error']);
    * const result3 = fnRes.ap(failureVal); // Failure<number> (propagates failure from value resource)
    */
-   // QVal allows the value resource to have a different param type than the function resource (this)
-   ap: <A, B, QVal>(resourceWithValue: Resource<A, QVal>) => Resource<B, QVal>;
+  // QVal allows the value resource to have a different param type than the function resource (this)
+  ap: <A, B, QVal>(
+    resourceWithValue: Resource<A, QVal>
+  ) => Resource<B, QVal>;
 
   /**
    * Lifts a value into a `Data` Resource, preserving existing `params` (if any).
@@ -221,16 +223,19 @@ export class Query<Q> implements ResourceMethods<any, Q> {
 
   public chain<R, P>(
     _fn: (x: Data<any, Q>) => Resource<R, P>
-  ): Resource<R, P> { // Changed return type
+  ): Resource<R, P> {
+    // Changed return type
     // Return Query, but cast to the expected return type.
     // This assumes P is compatible with Q or the context handles it.
     return this as unknown as Resource<R, P>;
   }
 
   // Query contains no function, so ap returns Query, preserving QVal but changing T to B
-  public ap<A, B, QVal>(_resourceWithValue: Resource<A, QVal>): Resource<B, QVal> {
-      // Returns Query with the params from the *value* resource
-      return Query.of(_resourceWithValue.params);
+  public ap<A, B, QVal>(
+    _resourceWithValue: Resource<A, QVal>
+  ): Resource<B, QVal> {
+    // Returns Query with the params from the *value* resource
+    return Query.of(_resourceWithValue.params);
   }
 
   public of<R>(value: R): Data<R, Q> {
@@ -247,7 +252,8 @@ export class Query<Q> implements ResourceMethods<any, Q> {
     }
   }
 
-  public update<P>(params: P): Query<P> { // Matches new interface signature
+  public update<P>(params: P): Query<P> {
+    // Matches new interface signature
     return Query.of(params);
   }
 
@@ -299,24 +305,38 @@ export class Data<T, Q> implements ResourceMethods<T, Q> {
   }
 
   // Standard applicative ap: Applies the function in `this` (if Data) to the value in `resourceWithValue`
-  public ap<A, B, QVal>(resourceWithValue: Resource<A, QVal>): Resource<B, QVal> { // Matches new interface signature
+  public ap<A, B, QVal>(
+    resourceWithValue: Resource<A, QVal>
+  ): Resource<B, QVal> {
+    // Matches new interface signature
     // Runtime check to ensure 'this' actually holds a function
-    if (typeof this.value !== 'function') {
-        // This case should ideally not happen if used correctly, but handle defensively
-        // Return Failure with the params from the *value* resource
-        return Failure.of([`Resource.ap called on Data variant that does not contain a function`], resourceWithValue.params);
+    if (typeof this.value !== "function") {
+      // This case should ideally not happen if used correctly, but handle defensively
+      // Return Failure with the params from the *value* resource
+      return Failure.of(
+        [
+          `Resource.ap called on Data variant that does not contain a function`
+        ],
+        resourceWithValue.params
+      );
     }
     const fn = this.value as (a: A) => B; // Cast after check
 
     // If the value resource is not Data, propagate its state (Query, Empty, Failure)
     // Re-wrap the non-data state with the correct type param B and params from value resource
     if (resourceWithValue.type !== ResourceTypes.Data) {
-        switch(resourceWithValue.type) {
-            // Return the non-data state with its original QVal params
-            case ResourceTypes.Query: return Query.of(resourceWithValue.params);
-            case ResourceTypes.Empty: return Empty.of(resourceWithValue.params);
-            case ResourceTypes.Failure: return Failure.of(resourceWithValue.messages, resourceWithValue.params);
-        }
+      switch (resourceWithValue.type) {
+        // Return the non-data state with its original QVal params
+        case ResourceTypes.Query:
+          return Query.of(resourceWithValue.params);
+        case ResourceTypes.Empty:
+          return Empty.of(resourceWithValue.params);
+        case ResourceTypes.Failure:
+          return Failure.of(
+            resourceWithValue.messages,
+            resourceWithValue.params
+          );
+      }
     }
     // Both are Data, apply the function (map the value resource with our function)
     // The result will have the params from the value resource (QVal)
@@ -337,11 +357,12 @@ export class Data<T, Q> implements ResourceMethods<T, Q> {
     }
   }
 
-  public update<P>(params: P): Query<P> { // Matches new interface signature
+  public update<P>(params: P): Query<P> {
+    // Matches new interface signature
     return Query.of(params);
   }
 
-  public getDataOr(): T {
+  public getDataOr(_ingore: unknown): T {
     return this.value;
   }
 }
@@ -372,14 +393,17 @@ export class Empty<Q> implements ResourceMethods<any, Q> {
 
   public chain<R, P>(
     _fn: (x: Data<any, Q>) => Resource<R, P>
-  ): Resource<R, P> { // Changed return type
+  ): Resource<R, P> {
+    // Changed return type
     return this as unknown as Resource<R, P>;
   }
 
   // Empty contains no function, so ap returns Empty, preserving QVal but changing T to B
-  public ap<A, B, QVal>(_resourceWithValue: Resource<A, QVal>): Resource<B, QVal> {
-      // Returns Empty with the params from the *value* resource
-      return Empty.of(_resourceWithValue.params);
+  public ap<A, B, QVal>(
+    _resourceWithValue: Resource<A, QVal>
+  ): Resource<B, QVal> {
+    // Returns Empty with the params from the *value* resource
+    return Empty.of(_resourceWithValue.params);
   }
 
   public of<R>(value: R): Data<R, Q> {
@@ -396,7 +420,8 @@ export class Empty<Q> implements ResourceMethods<any, Q> {
     }
   }
 
-  public update<P>(params: P): Query<P> { // Matches new interface signature
+  public update<P>(params: P): Query<P> {
+    // Matches new interface signature
     return Query.of(params);
   }
 
@@ -435,14 +460,17 @@ export class Failure<Q> implements ResourceMethods<any, Q> {
 
   public chain<R, P>(
     _fn: (x: Data<any, Q>) => Resource<R, P>
-  ): Resource<R, P> { // Changed return type
+  ): Resource<R, P> {
+    // Changed return type
     return this as unknown as Resource<R, P>;
   }
 
   // Failure contains no function, so ap returns Failure, preserving QVal but changing T to B
-  public ap<A, B, QVal>(_resourceWithValue: Resource<A, QVal>): Resource<B, QVal> {
-      // Returns Failure with the params from the *value* resource
-      return Failure.of(this.messages, _resourceWithValue.params);
+  public ap<A, B, QVal>(
+    _resourceWithValue: Resource<A, QVal>
+  ): Resource<B, QVal> {
+    // Returns Failure with the params from the *value* resource
+    return Failure.of(this.messages, _resourceWithValue.params);
   }
 
   public of<R>(value: R): Data<R, Q> {
@@ -459,7 +487,8 @@ export class Failure<Q> implements ResourceMethods<any, Q> {
     }
   }
 
-  public update<P>(params: P): Query<P> { // Matches new interface signature
+  public update<P>(params: P): Query<P> {
+    // Matches new interface signature
     return Query.of(params);
   }
 
