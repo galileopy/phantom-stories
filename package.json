@@ -10,7 +10,7 @@
   "scripts": {
     "build": "rollup -c",
     "prepare": "npm run build",
-    "test": "jest --coverage",
+    "test": "jest",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },
   "files": [
@@ -40,13 +40,6 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-jest": "^29.3.2",
     "typescript": "^5.8.3"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "jsdom",
-    "testPathIgnorePatterns": [
-      "build/"
-    ]
   },
   "standard": {
     "ignore": [
