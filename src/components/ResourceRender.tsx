@@ -5,7 +5,7 @@ import {
   Query,
   Empty,
   Data,
-  Error
+  Failure
 } from "../unions/Resource";
 
 export interface ResourcerRendererProps<T, Q> {
@@ -21,7 +21,7 @@ export interface QueryProps<T, Q>
   extends ResourcerRendererProps<T, Q> {
   params: Q;
 }
-export interface ErrorProps<T, Q>
+export interface FailureProps<T, Q>
   extends ResourcerRendererProps<T, Q> {
   params: Q;
   messages: string[];
@@ -36,20 +36,20 @@ interface Props<T, Q> {
   Data: React.FC<DataProps<T, Q>>;
   Query: React.FC<QueryProps<T, Q>>;
   Empty: React.FC<EmptyProps<T, Q>>;
-  Error: React.FC<ErrorProps<T, Q>>;
+  Failure: React.FC<FailureProps<T, Q>>;
   commonProps?: any;
   matchingProps?: {
     Data?: any;
     Query?: any;
     Empty?: any;
-    Error?: any;
+    Failure?: any;
   };
 }
 
 export const ResourceRender = <T, Q>(
   props: Props<T, Q>
-): JSX.Element => {
-  const { resource, Data, Query, Empty, Error } = props;
+): React.ReactNode => {
+  const { resource, Data, Query, Empty, Failure } = props;
   const { commonProps, matchingProps } = props;
 
   const specific = merge(
@@ -57,7 +57,7 @@ export const ResourceRender = <T, Q>(
       Data: {},
       Query: {},
       Empty: {},
-      Error: {}
+      Failure: {}
     },
     matchingProps || {}
   );
@@ -91,13 +91,13 @@ export const ResourceRender = <T, Q>(
         />
       );
     },
-    Error({ messages, params }: Error<Q>) {
+    Failure({ messages, params }: Failure<Q>) {
       return (
-        <Error
+        <Failure
           resource={resource}
           messages={messages}
           params={params}
-          {...merge(commonProps || {}, specific.Error)}
+          {...merge(commonProps || {}, specific.Failure)}
         />
       );
     }
