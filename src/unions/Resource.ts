@@ -40,6 +40,9 @@ export type Resource<T, Q> =
 
 /**
  * Pattern for matching Resource states, used with `matchWith`.
+ * @typeParam T - The type of the data in `Data` state.
+ * @typeParam Q - The type of optional parameters.
+ * @typeParam R - The return type of the pattern functions.
  */
 export interface ResourcePattern<T, Q, R> {
   Query: (resource: Query<Q>) => R;

@@ -1,27 +1,47 @@
 {
-  "name": "phantom-stories",
+  "name": "@galileopy/phantom-stories",
   "license": "GPL-3.0-or-later",
-  "author": "Galileo Sánchez <contact@galileopy.com> (https://galileopy.com/)",
+  "author": "Galileo Sánchez <galileo@galileopy.com> (https://blog.galileopy.com/)",
   "version": "0.0.2",
   "type": "module",
   "main": "build/index.js",
   "module": "build/index.es.js",
+  "types": "build/index.d.ts",
   "jsnext:main": "build/index.es.js",
   "scripts": {
     "build": "rollup -c",
     "prepare": "npm run build",
     "test": "jest",
-    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
+    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "docs": "typedoc --options typedoc.json",
+    "version:patch": "npm version patch && git push && git push --tags",
+    "prepublishOnly": "npm run build && npm run test"
   },
   "files": [
     "build"
   ],
+  "keywords": [
+    "typescript",
+    "functional-programming",
+    "react",
+    "redux",
+    "validation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/galileopy/phantom-stories.git"
+  },
+  "homepage": "https://galileopy.github.io/phantom-stories/",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/jest": "^29.5.14",
+    "@types/ramda": "^0.30.2",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@typescript-eslint/eslint-plugin": "^8.31.0",
@@ -39,12 +59,14 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-jest": "^29.3.2",
+    "typedoc": "^0.28.3",
     "typescript": "^5.8.3"
   },
   "standard": {
     "ignore": [
       "node_modules/",
-      "build/"
+      "build/",
+      "docs/"
     ],
     "globals": [
       "describe",
@@ -60,6 +82,6 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "remeda": "^0.0.20"
+    "ramda": "^0.30.1"
   }
 }

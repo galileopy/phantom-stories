@@ -1,0 +1,19 @@
+{
+  "entryPoints": [
+    "src/index.ts",
+    "src/unions/Resource.ts",
+    "src/unions/Validation.ts",
+    "src/components/index.ts"
+  ],
+  "out": "docs",
+  "name": "Phantom Stories Library",
+  "readme": "README.md",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "theme": "default",
+  "gitRevision": "master",
+  "tsconfig": "tsconfig.json",
+  "entryPointStrategy": "expand"
+}

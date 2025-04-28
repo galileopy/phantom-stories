@@ -1,2 +1,2 @@
-export { default as ResourceRender } from './ResourceRender'
-export { default as ValidationRender } from './ValidationRender'
+export * as ResourceRender from "./ResourceRender";
+export * as ValidationRender from "./ValidationRender";
