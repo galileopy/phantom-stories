@@ -6,8 +6,9 @@
   ],
   "extends": [
     "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended"
+    "plugin:@typescript-eslint/recommended", // Use recommended TS rules
+    "plugin:react/recommended", // Base React rules
+    "plugin:react/jsx-runtime", // Rules for the new JSX transform
+    "prettier" // Add prettier last to override formatting rules
   ]
 }

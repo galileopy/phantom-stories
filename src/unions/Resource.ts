@@ -71,7 +71,9 @@ export class Data<T, Q> implements ResourceMethods<T, Q> {
       const result = fn(this.value);
       return Data.of(result, this.params);
     } catch (e) {
-      return Error.of([e.message as string], this.params);
+      // Check if e is an instance of the built-in Error before accessing message
+      const message = e instanceof globalThis.Error ? e.message : String(e);
+      return Error.of([message], this.params); // Pass the derived message string in an array
     }
   }
   public chain<R, P>(
@@ -194,7 +196,11 @@ export const overPromise = <R, Q>(
 ): Promise<Data<R, Q> | Error<Q>> =>
   promise.then(
     (value: R) => Data.of(value, params),
-    (error) => Error.of([error.message as string], params)
+    (error) => {
+      // Check if error is an instance of the built-in Error before accessing message
+      const message = error instanceof globalThis.Error ? error.message : String(error);
+      return Error.of([message], params); // Pass the derived message string in an array
+    }
   );
 
 export const Resource = {
