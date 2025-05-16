@@ -5,13 +5,13 @@ A TypeScript library for managing asynchronous data states with functional progr
 ## Installation
 
 ```bash
-npm install phantom-stories
+npm install @galileopy/phantom-stories
 ```
 
 ## Usage
 
 ```typescript
-import { Resource } from "phantom-stories";
+import { Resource } from "@galileopy/phantom-stories";
 
 const userResource = Resource.Data(
   { id: "123", name: "Jane" },
