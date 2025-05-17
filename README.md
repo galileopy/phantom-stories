@@ -1,4 +1,3 @@
-```markdown
 # Phantom Stories
 
 **Phantom Stories** is a TypeScript library for managing asynchronous data states and validation using functional programming (FP) principles. Built for seamless integration with **Redux Toolkit**, **Redux Observables**, and **React**, it provides algebraic data types (ADTs) like `Resource` and `Validation` to handle complex state transitions and form validation declaratively. Whether you're fetching data, managing loading states, or validating user input, Phantom Stories brings FP elegance to your JavaScript applications.
