@@ -2,7 +2,7 @@
   "name": "@galileopy/phantom-stories",
   "license": "GPL-3.0-or-later",
   "author": "Galileo Sánchez <galileo@galileopy.com> (https://blog.galileopy.com/)",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "type": "module",
   "main": "build/index.js",
   "module": "build/index.es.js",
