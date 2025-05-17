@@ -68,5 +68,3 @@ export const ValidationRender = function <T>(
     }
   });
 };
-
-export default ValidationRender;

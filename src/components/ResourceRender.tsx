@@ -23,7 +23,8 @@ export interface ResourceRendererProps<T, Q> {
  * @typeParam T - The type of the data in `Data` state.
  * @typeParam Q - The type of optional parameters.
  */
-export interface ResourceDataProps<T, Q> extends ResourceRendererProps<T, Q> {
+export interface ResourceDataProps<T, Q>
+  extends ResourceRendererProps<T, Q> {
   /** The data value from the Data state. */
   value: T;
   /** Optional parameters associated with the Data state. */
@@ -180,5 +181,3 @@ export const ResourceRender = <T, Q>(
     }
   });
 };
-
-export default ResourceRender;

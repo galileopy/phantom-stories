@@ -425,3 +425,37 @@ describe("Resource", () => {
     });
   });
 });
+
+describe("Resource simplified constructors", () => {
+  test("Data constructor", () => {
+    const resource = Resource.Data(42, { id: "123" });
+    expect(resource).toBeInstanceOf(Data);
+    expect(resource.value).toEqual(42);
+    expect(resource.params).toEqual({ id: "123" });
+  });
+  test("Query constructor", () => {
+    const resource = Resource.Query({ id: "123" });
+    expect(resource).toBeInstanceOf(Query);
+    expect(resource.params).toEqual({ id: "123" });
+  });
+  test("Empty constructor", () => {
+    const resource = Resource.Empty({ id: "123" });
+    expect(resource).toBeInstanceOf(Empty);
+    expect(resource.params).toEqual({ id: "123" });
+  });
+  test("Failure constructor", () => {
+    const resource = Resource.Failure(["error"], { id: "123" });
+    expect(resource).toBeInstanceOf(Failure);
+    expect(resource.messages).toEqual(["error"]);
+    expect(resource.params).toEqual({ id: "123" });
+  });
+  test("overPromise constructor", async () => {
+    const resource = await Resource.overPromise(
+      { id: "123" },
+      Promise.resolve(42)
+    );
+    expect(resource).toBeInstanceOf(Data);
+    expect(resource.getDataOr(null)).toEqual(42);
+    expect(resource.params).toEqual({ id: "123" });
+  });
+});

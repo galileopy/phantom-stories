@@ -1,2 +1,2 @@
-export * as ResourceRender from "./ResourceRender";
-export * as ValidationRender from "./ValidationRender";
+export * from "./ResourceRender";
+export * from "./ValidationRender";
